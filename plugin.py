@@ -51,8 +51,6 @@ class Kaamelott(callbacks.Plugin):
 
     def citation(self, irc, msg, args):
         recueil = []
-        fake = ["toto", "tutu"]
-        recueil.append(fake)
         j = 1
         quote = [] 
         picked = [] 
