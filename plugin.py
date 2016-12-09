@@ -64,8 +64,8 @@ class Kaamelott(callbacks.Plugin):
             else:
                 quote.append(unicode(line.rstrip(), "utf-8"))
         picked = random.choice(recueil)
-        irc.reply(picked[0].encode("ascii", "replace"), prefixNick=False)
-        irc.reply(picked[1].encode("ascii", "replace"), prefixNick=False)
+        irc.reply(picked[0].encode("utf-8", "replace"), prefixNick=False)
+        irc.reply(picked[1].encode("utf-8", "replace"), prefixNick=False)
 
     citation = wrap(citation)
 
