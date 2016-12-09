@@ -34,9 +34,9 @@ from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircutils as ircutils
 import supybot.callbacks as callbacks
+import supybot.conf as conf
 import random
-
-
+import os
 
 class Kaamelott(callbacks.Plugin):
     """Quote from Kaamelott """
@@ -47,23 +47,34 @@ class Kaamelott(callbacks.Plugin):
         self.__parent.__init__(irc)
         self.rng = random.Random()   # create our rng
         self.rng.seed()   # automatically seeds with current time
-        self.data = "/home/pkerbrat/supybot/plugins/Kaamelott/kaamelott"
+        self.data = conf.supybot.plugins.Kaamelott.quotes()
 
     def citation(self, irc, msg, args):
         recueil = []
         j = 1
         quote = [] 
         picked = [] 
-        srcfile = open(self.data, 'r')
-        for line in srcfile:
-            if (line.startswith("%")):
-                recueil.append(quote[:])
-                quote = []
-            else:
-                quote.append(unicode(line.rstrip(), "utf-8"))
-        picked = random.choice(recueil)
-        for line in picked:
-            irc.reply(line.encode("utf-8", "replace"), prefixNick=False)
+        filename = conf.supybot.plugins.Kaamelott.quotes()
+        if not filename:
+            """Try in current dir"""
+            filename = "./Kaamelott"
+
+        if os.path.exists(filename):
+            with open(filename, 'r') as srcfile:
+                try:
+                    # do stuff
+                    for line in srcfile:
+                        if (line.startswith("%")):
+                            recueil.append(quote[:])
+                            quote = []
+                        else:
+                            quote.append(unicode(line.rstrip(), "utf-8"))
+                    picked = random.choice(recueil)
+                    for line in picked:
+                        irc.reply(line.encode("utf-8", "replace"), prefixNick=False)
+                except : # whatever reader errors you care about
+                    # handle error
+                    irc.error(_("Could not open quotes file"), Raise=True)
 
     citation = wrap(citation)
 

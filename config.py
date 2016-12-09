@@ -39,11 +39,12 @@ def configure(advanced):
     from supybot.questions import expect, anything, something, yn
     conf.registerPlugin('Kaamelott', True)
 
-
-SC = conf.registerPlugin('Kaamelott')
+Kaamelott = conf.registerPlugin('Kaamelott')
 # This is where your configuration variables (if any) should go.  For example:
 # conf.registerGlobalValue(SC, 'someConfigVariableName',
 #     registry.Boolean(False, """Help for someConfigVariableName."""))
 
+conf.registerGlobalValue(Kaamelott, 'quotes',
+	registry.String('', """Path to the file containing the quotes."""))
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
