@@ -40,7 +40,6 @@ import os
 
 class Kaamelott(callbacks.Plugin):
     """Quote from Kaamelott """
-    pass
 
     def __init__(self, irc):
         self.__parent = super(Kaamelott, self)
@@ -50,8 +49,8 @@ class Kaamelott(callbacks.Plugin):
 	self.count = 0 #reset global counter
 	self.nextreply = self.rng.randint(1, 10) # when coun reach this value then bot replies
 	self.log.info("count={} next={}".format(self.count, self.nextreply))
-        self.messages = ["C'est pas faux", "Je vous piche de mieux en mieux",\
-                "Entre 7 et 26, a 3 j'ai rien piche, a 13 je suis pas sur et a 17 j'ai tout compris"]
+        self.messages = ["C'est pas faux", "Je vous piche de moins en moins",\
+                "Entre 7 et 26, a 3 j'ai rien compris, a 13 je suis pas sur et a 17 c'est clair comme de l'eau de roche"]
 
     def invalidCommand(self, irc, msg, tokens):
         try:
@@ -60,16 +59,14 @@ class Kaamelott(callbacks.Plugin):
         except:
             self.log.error("message not retrievable.")
 
-        if not irc.isChannel(msg.args[0]):
-            channel = msg.args[0]
-	    self.count = self.count + 1
-	    if self.nextreply == self.count:
-		    self.count = 0
-		    self.nextreply = self.rng.randint(1, 10)
-                    randmsg = self.rng.randint(0, len(self.messages)-1)
-		    reply = self.messages[randmsg]
-                    self.log.debug("Reply is: "+str(reply))
-                    irc.reply(reply)
+	self.count = self.count + 1
+	if self.nextreply == self.count:
+	        self.count = 0
+	        self.nextreply = self.rng.randint(1, 10)
+                randmsg = self.rng.randint(0, len(self.messages)-1)
+	        reply = self.messages[randmsg]
+                self.log.debug("Reply is: "+str(reply))
+                irc.reply(reply)
 
     def citation(self, irc, msg, args):
         recueil = []
