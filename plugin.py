@@ -47,17 +47,41 @@ class Kaamelott(callbacks.Plugin):
         self.__parent.__init__(irc)
         self.rng = random.Random()   # create our rng
         self.rng.seed()   # automatically seeds with current time
-        self.data = conf.supybot.plugins.Kaamelott.quotes()
+	self.count = 0 #reset global counter
+	self.nextreply = self.rng.randint(1, 10) # when coun reach this value then bot replies
+	self.log.info("count={} next={}".format(self.count, self.nextreply))
+        self.messages = ["C'est pas faux", "Je vous piche de mieux en mieux",\
+                "Entre 7 et 26, a 3 j'ai rien piche, a 13 je suis pas sur et a 17 j'ai tout compris"]
+
+    def invalidCommand(self, irc, msg, tokens):
+        try:
+            self.log.debug('Channel is: "+str(irc.isChannel(msg.args[0]))')
+            self.log.debug("Message is: "+str(msg.args))
+        except:
+            self.log.error("message not retrievable.")
+
+        if not irc.isChannel(msg.args[0]):
+            channel = msg.args[0]
+	    self.count = self.count + 1
+	    if self.nextreply == self.count:
+		    self.count = 0
+		    self.nextreply = self.rng.randint(1, 10)
+                    randmsg = self.rng.randint(0, len(self.messages)-1)
+		    reply = self.messages[randmsg]
+                    self.log.debug("Reply is: "+str(reply))
+                    irc.reply(reply)
 
     def citation(self, irc, msg, args):
         recueil = []
         j = 1
         quote = [] 
         picked = [] 
-        filename = conf.supybot.plugins.Kaamelott.quotes()
+        filename = self.registryValue('quotes')
         if not filename:
-            """Try in current dir"""
-            filename = "./Kaamelott"
+            self.log.error("Please provide path to quotes in config")
+            self.log.error("add supybot.plugins.Kaamelott.quotes")
+            irc.error("quotes not installed", Raise=True)
+
 
         if os.path.exists(filename):
             with open(filename, 'r') as srcfile:
@@ -74,7 +98,10 @@ class Kaamelott(callbacks.Plugin):
                         irc.reply(line.encode("utf-8", "replace"), prefixNick=False)
                 except : # whatever reader errors you care about
                     # handle error
+                    self.log.error("Could not open quotes file")
                     irc.error(_("Could not open quotes file"), Raise=True)
+        else:
+            self.log.error("unknow file: {}".format(filename))
 
     citation = wrap(citation)
 
